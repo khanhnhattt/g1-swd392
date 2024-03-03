@@ -8,7 +8,7 @@ public class UserBean implements Serializable {
 	public UserBean() {
 	}
 
-	public UserBean(String userName, Long mobileNo, String emailId, String address, int pinCode, String password) {
+	public UserBean(String userName, Long mobileNo, String emailId, String address, int pinCode, String password, String userType, boolean isActive) {
 		super();
 		this.name = userName;
 		this.mobile = mobileNo;
@@ -16,6 +16,8 @@ public class UserBean implements Serializable {
 		this.address = address;
 		this.pinCode = pinCode;
 		this.password = password;
+		this.userType = userType;
+		this.isActive = true;
 	}
 
 	private String name;
@@ -24,6 +26,8 @@ public class UserBean implements Serializable {
 	private String address;
 	private int pinCode;
 	private String password;
+	private String userType;
+	private boolean isActive;
 
 	public String getName() {
 		return name;
@@ -71,6 +75,22 @@ public class UserBean implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 
 }
