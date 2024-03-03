@@ -32,7 +32,7 @@ public class RegisterSrv extends HttpServlet {
 		String confirmPassword = request.getParameter("confirmPassword");
 		String status = "";
 		if (password != null && password.equals(confirmPassword)) {
-			UserBean user = new UserBean(userName, mobileNo, emailId, address, pinCode, password);
+			UserBean user = new UserBean(userName, mobileNo, emailId, address, pinCode, password, "user", true);
 
 			UserServiceImpl dao = new UserServiceImpl();
 
