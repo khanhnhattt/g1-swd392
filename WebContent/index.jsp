@@ -24,13 +24,6 @@
 	String password = (String) session.getAttribute("password");
 	String userType = (String) session.getAttribute("usertype");
 
-	boolean isValidUser = true;
-
-	if (userType == null || userName == null || password == null || !userType.equals("customer")) {
-
-		isValidUser = false;
-	}
-
 	ProductServiceImpl prodDao = new ProductServiceImpl();
 	List<ProductBean> products = new ArrayList<ProductBean>();
 
@@ -64,7 +57,7 @@
 
 			<%
 			for (ProductBean product : products) {
-				int cartQty = new CartServiceImpl().getCartItemCount(userName, product.getProdId());
+				int cartQty = new CartServiceImpl().getGuestCartItemCount(session.getId(), product.getProdId());
 			%>
 			<div class="col-sm-4" style='height: 350px;'>
 				<div class="thumbnail">
@@ -87,17 +80,17 @@
 						if (cartQty == 0) {
 						%>
 						<button type="submit"
-							formaction="./AddtoCart?uid=<%=userName%>&pid=<%=product.getProdId()%>&pqty=1"
+							formaction="./AddtoCart?uid=<%=session.getId()%>&pid=<%=product.getProdId()%>&pqty=1"
 							class="btn btn-success">Add to Cart</button>
 						&nbsp;&nbsp;&nbsp;
 						<button type="submit"
-							formaction="./AddtoCart?uid=<%=userName%>&pid=<%=product.getProdId()%>&pqty=1"
+							formaction="payment.jsp?amount=<%=product.getProdPrice()%>"
 							class="btn btn-primary">Buy Now</button>
 						<%
 						} else {
 						%>
 						<button type="submit"
-							formaction="./AddtoCart?uid=<%=userName%>&pid=<%=product.getProdId()%>&pqty=0"
+							formaction="./AddtoCart?uid=<%=session.getId()%>&pid=<%=product.getProdId()%>&pqty=0"
 							class="btn btn-danger">Remove From Cart</button>
 						&nbsp;&nbsp;&nbsp;
 						<button type="submit" formaction="cartDetails.jsp"
@@ -119,7 +112,7 @@
 	<!-- ENd of Product Items List -->
 
 
-	<%@ include file="footer.html"%>
+	<%@ include file="footer.jsp"%>
 
 </body>
 </html>
