@@ -23,11 +23,6 @@
 	String userName = (String) session.getAttribute("username");
 	String password = (String) session.getAttribute("password");
 
-	if (userName == null || password == null) {
-
-		response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
-	}
-
 	String sAmount = request.getParameter("amount");
 
 	double amount = 0;
@@ -101,7 +96,7 @@
 	<!-- ENd of Product Items List -->
 
 
-	<%@ include file="footer.html"%>
+	<%@ include file="footer.jsp"%>
 
 </body>
 </html>

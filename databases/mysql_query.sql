@@ -243,3 +243,8 @@ INSERT INTO `shopping-cart`.`usercart` (`username`, `prodid`, `quantity`) VALUES
 
 COMMIT;
 
+
+CREATE TABLE `shopping-cart`.`guestcart` (
+  `sessionId` VARCHAR(60) NULL DEFAULT NULL,
+  `productId` VARCHAR(45) NULL DEFAULT NULL,
+  `quantity` INT NULL DEFAULT NULL);
