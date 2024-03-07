@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.shashi.beans.UserBean;
+import com.shashi.beans.UserRoleBean;
 import com.shashi.service.impl.UserServiceImpl;
 
 /**
@@ -30,20 +31,26 @@ public class LoginSrv extends HttpServlet {
         String password = request.getParameter("password");
         response.setContentType("text/html");
 
-        UserServiceImpl udao = new UserServiceImpl();
-        String status = udao.isValidCredential(userName, password);
+        UserServiceImpl userService = new UserServiceImpl();
+        String status = userService.isValidCredential(userName, password);
         if (status.equalsIgnoreCase("valid")) {
             // valid user
-            UserBean user = udao.getUserDetails(userName, password);
+            UserBean user = userService.getUserDetails(userName, password);
+            UserRoleBean[] userRole = userService.getUserRole(user.getEmail());
             HttpSession session = request.getSession();
             session.setAttribute("userdata", user);
 
             session.setAttribute("username", user.getEmail());
             session.setAttribute("password", user.getPassword());
-            session.setAttribute("usertype", user.getUserType());
+
+            // 1 is admin
+            // 2 is user
+            // apply admin if available
+            String userType = userRole[0].getRoleId() == 1 ? "admin" : "user";
+            session.setAttribute("usertype", userType);
 
             RequestDispatcher rd = null;
-            if (user.getUserType().equals("admin")) {
+            if (userType.equals("admin")) {
                 rd = request.getRequestDispatcher("adminViewProduct.jsp");
             } else {
                 rd = request.getRequestDispatcher("userHome.jsp");

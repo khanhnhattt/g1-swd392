@@ -68,16 +68,34 @@ CREATE TABLE IF NOT EXISTS `shopping-cart`.`user` (
   `address` VARCHAR(250) NULL DEFAULT NULL,
   `pincode` INT NULL DEFAULT NULL,
   `password` VARCHAR(20) NULL DEFAULT NULL,
+  `is_active` BOOLEAN DEFAULT TRUE,
   PRIMARY KEY (`email`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
-alter table `user`
-    add COLUMN `is_active` BOOLEAN;
-alter table `user`
-    add COLUMN `user_type` TEXT;
+-- Table `role`
+DROP TABLE IF EXISTS `shopping-cart`.`role` ;
 
+CREATE TABLE IF NOT EXISTS `shopping-cart`.`role` (
+    `id` INT NOT NULL,
+    `role` VARCHAR(30) DEFAULT NULL,
+    PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- Table `user_role`
+CREATE TABLE IF NOT EXISTS `shopping-cart`.`user_role` (
+    `user_email` VARCHAR(60) NOT NULL,
+    `role_id` INT NOT NULL,
+    PRIMARY KEY (`user_email`, `role_id`),
+    FOREIGN KEY (`user_email`) REFERENCES `shopping-cart`.`user` (`email`) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`role_id`) REFERENCES `shopping-cart`.`role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 -- -----------------------------------------------------
 -- Table `shopping-cart`.`transactions`
@@ -161,6 +179,11 @@ COLLATE = utf8mb4_0900_ai_ci;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+-- Data for table `shopping-cart`.`role`
+INSERT INTO `shopping-cart`.`role` (`id`, `role`) VALUES (1, 'admin');
+INSERT INTO `shopping-cart`.`role` (`id`, `role`) VALUES (2, 'user');
 
 -- -----------------------------------------------------
 -- Data for table `shopping-cart`.`product`
