@@ -92,7 +92,7 @@
                                         <div class="row">
                                             <div class="col-sm-6 form-group">
                                                 <input class="form-control" id="name" name="name"
-                                                       value="<%= u.getName()%>" type="text" required disabled="true">
+                                                       value="<%= u.getName()%>" type="text" required readonly="true">
                                             </div>
                                             <div class="col-sm-6 form-group">
                                                 <select class="form-control" id="contact" name="contact">
@@ -105,11 +105,11 @@
                                         <div class="row">
                                             <div class="col-sm-6 form-group">
                                                 <input class="form-control" id="email" name="email"
-                                                       value="<%= u.getEmail()%>" type="email" required disabled="true">
+                                                       value="<%= u.getEmail()%>" type="email" required readonly="true">
                                             </div>
                                             <div class="col-sm-6 form-group">
                                                 <input class="form-control" id="phone" name="phone"
-                                                       value="<%= u.getMobile()%>" type="text" required disabled="true">
+                                                       value="<%= u.getMobile()%>" type="text" required readonly="true">
                                             </div>
                                         </div>
                                         <textarea class="form-control" id="comments" name="comments"
