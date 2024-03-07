@@ -25,11 +25,7 @@
 	String userName = (String) session.getAttribute("username");
 	String password = (String) session.getAttribute("password");
 
-	if (userName == null || password == null) {
-
-		response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
-
-	}
+	
 
 	String addS = request.getParameter("add");
 	if (addS != null) {
@@ -40,19 +36,33 @@
 		int avail = Integer.parseInt(request.getParameter("avail"));
 		int cartQty = Integer.parseInt(request.getParameter("qty"));
 		CartServiceImpl cart = new CartServiceImpl();
-
-		if (add == 1) {
+                if (userName == null) {
+                    if (add == 1) {
 			//Add Product into the cart
 			cartQty += 1;
 			if (cartQty <= avail) {
-		cart.addProductToCart(uid, pid, 1);
+                            cart.addProductToGuestCart(session.getId(), pid, 1);
 			} else {
-		response.sendRedirect("./AddtoCart?pid=" + pid + "&pqty=" + cartQty);
+                            response.sendRedirect("./AddtoCart?pid=" + pid + "&pqty=" + cartQty);
 			}
-		} else if (add == 0) {
+                    } else if (add == 0) {
 			//Remove Product from the cart
-			cart.removeProductFromCart(uid, pid);
-		}
+			cart.removeProductFromGuestCart(session.getId(), pid);
+                    }
+                } else {
+                    if (add == 1) {
+			//Add Product into the cart
+			cartQty += 1;
+			if (cartQty <= avail) {
+                            cart.addProductToCart(uid, pid, 1);
+			} else {
+                            response.sendRedirect("./AddtoCart?pid=" + pid + "&pqty=" + cartQty);
+			}
+                    } else if (add == 0) {
+                            //Remove Product from the cart
+                            cart.removeProductFromCart(uid, pid);
+                    }
+                }
 	}
 	%>
 
@@ -89,7 +99,11 @@
 				<%
 				CartServiceImpl cart = new CartServiceImpl();
 				List<CartBean> cartItems = new ArrayList<CartBean>();
-				cartItems = cart.getAllCartItems(userName);
+                                if (userName == null) {
+                                    cartItems = cart.getAllGuestCartItems(session.getId());
+                                } else {
+                                    cartItems = cart.getAllCartItems(userName);
+                                }
 				double totAmount = 0;
 				for (CartBean item : cartItems) {
 
@@ -161,7 +175,7 @@
 	<!-- ENd of Product Items List -->
 
 
-	<%@ include file="footer.html"%>
+	<%@ include file="footer.jsp"%>
 
 </body>
 </html>

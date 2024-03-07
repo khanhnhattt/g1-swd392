@@ -76,7 +76,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 -- Table `role`
 DROP TABLE IF EXISTS `shopping-cart`.`role` ;
-
 CREATE TABLE IF NOT EXISTS `shopping-cart`.`role` (
     `id` INT NOT NULL,
     `role` VARCHAR(30) DEFAULT NULL,
@@ -266,3 +265,8 @@ INSERT INTO `shopping-cart`.`usercart` (`username`, `prodid`, `quantity`) VALUES
 
 COMMIT;
 
+
+CREATE TABLE `shopping-cart`.`guestcart` (
+  `sessionId` VARCHAR(60) NULL DEFAULT NULL,
+  `productId` VARCHAR(45) NULL DEFAULT NULL,
+  `quantity` INT NULL DEFAULT NULL);

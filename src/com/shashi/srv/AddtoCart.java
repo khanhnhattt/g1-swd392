@@ -35,10 +35,6 @@ public class AddtoCart extends HttpServlet {
 		String userName = (String) session.getAttribute("username");
 		String password = (String) session.getAttribute("password");
 		String usertype = (String) session.getAttribute("usertype");
-		if (userName == null || password == null || usertype == null || !usertype.equalsIgnoreCase("customer")) {
-			response.sendRedirect("login.jsp?message=Session Expired, Login Again to Continue!");
-			return;
-		}
 
 		// login Check Successfull
 
@@ -61,53 +57,109 @@ public class AddtoCart extends HttpServlet {
 		PrintWriter pw = response.getWriter();
 
 		response.setContentType("text/html");
-		if (pQty == cartQty) {
-			String status = cart.removeProductFromCart(userId, prodId);
+                
+                if (userName == null || password == null || usertype == null || !usertype.equalsIgnoreCase("customer")) {
+			//response.sendRedirect("login.jsp?message=Session Expired, Login Again to Continue!");
+			//return;
+                    if (pQty == cartQty) {
+                        String status = cart.removeProductFromGuestCart(session.getId(), prodId);
 
-			RequestDispatcher rd = request.getRequestDispatcher("userHome.jsp");
+                        RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
 
-			rd.include(request, response);
+                        rd.include(request, response);
 
-			pw.println("<script>document.getElementById('message').innerHTML='" + status + "'</script>");
-		} else if (availableQty < pQty) {
+                        pw.println("<script>document.getElementById('message').innerHTML='" + status + "'</script>");
+                    } else if (availableQty < pQty) {
 
-			String status = null;
+                        String status = null;
 
-			if (availableQty == 0) {
-				status = "Product is Out of Stock!";
-			} else {
+                        if (availableQty == 0) {
+                            status = "Product is Out of Stock!";
+                        } else {
 
-				cart.updateProductToCart(userId, prodId, availableQty);
+                            cart.updateProductToGuestCart(session.getId(), prodId, availableQty);
 
-				status = "Only " + availableQty + " no of " + product.getProdName()
-						+ " are available in the shop! So we are adding only " + availableQty
-						+ " products into Your Cart" + "";
-			}
-			DemandBean demandBean = new DemandBean(userName, product.getProdId(), pQty - availableQty);
+                            status = "Only " + availableQty + " no of " + product.getProdName()
+                                    + " are available in the shop! So we are adding only " + availableQty
+                                    + " products into Your Cart" + "";
+                        }
+                        DemandBean demandBean = new DemandBean(userName, product.getProdId(), pQty - availableQty);
 
-			DemandServiceImpl demand = new DemandServiceImpl();
+                        DemandServiceImpl demand = new DemandServiceImpl();
 
-			boolean flag = demand.addProduct(demandBean);
+                        boolean flag = demand.addProduct(demandBean);
 
-			if (flag)
-				status += "<br/>Later, We Will Mail You when " + product.getProdName()
-						+ " will be available into the Store!";
+                        if (flag) {
+                            status += "<br/>Later, We Will Mail You when " + product.getProdName()
+                                    + " will be available into the Store!";
+                        }
 
-			RequestDispatcher rd = request.getRequestDispatcher("cartDetails.jsp");
+                        RequestDispatcher rd = request.getRequestDispatcher("cartDetails.jsp");
 
-			rd.include(request, response);
+                        rd.include(request, response);
 
-			pw.println("<script>document.getElementById('message').innerHTML='" + status + "'</script>");
+                        pw.println("<script>document.getElementById('message').innerHTML='" + status + "'</script>");
 
+                    } else {
+                        String status = cart.updateProductToGuestCart(session.getId(), prodId, pQty);
+
+                        RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
+
+                        rd.include(request, response);
+
+                        pw.println("<script>document.getElementById('message').innerHTML='" + status + "'</script>");
+                    }
+                    
 		} else {
-			String status = cart.updateProductToCart(userId, prodId, pQty);
+                    if (pQty == cartQty) {
+                        String status = cart.removeProductFromCart(userId, prodId);
 
-			RequestDispatcher rd = request.getRequestDispatcher("userHome.jsp");
+                        RequestDispatcher rd = request.getRequestDispatcher("userHome.jsp");
 
-			rd.include(request, response);
+                        rd.include(request, response);
 
-			pw.println("<script>document.getElementById('message').innerHTML='" + status + "'</script>");
-		}
+                        pw.println("<script>document.getElementById('message').innerHTML='" + status + "'</script>");
+                    } else if (availableQty < pQty) {
+
+                        String status = null;
+
+                        if (availableQty == 0) {
+                            status = "Product is Out of Stock!";
+                        } else {
+
+                            cart.updateProductToCart(userId, prodId, availableQty);
+
+                            status = "Only " + availableQty + " no of " + product.getProdName()
+                                    + " are available in the shop! So we are adding only " + availableQty
+                                    + " products into Your Cart" + "";
+                        }
+                        DemandBean demandBean = new DemandBean(userName, product.getProdId(), pQty - availableQty);
+
+                        DemandServiceImpl demand = new DemandServiceImpl();
+
+                        boolean flag = demand.addProduct(demandBean);
+
+                        if (flag) {
+                            status += "<br/>Later, We Will Mail You when " + product.getProdName()
+                                    + " will be available into the Store!";
+                        }
+
+                        RequestDispatcher rd = request.getRequestDispatcher("cartDetails.jsp");
+
+                        rd.include(request, response);
+
+                        pw.println("<script>document.getElementById('message').innerHTML='" + status + "'</script>");
+
+                    } else {
+                        String status = cart.updateProductToCart(userId, prodId, pQty);
+
+                        RequestDispatcher rd = request.getRequestDispatcher("userHome.jsp");
+
+                        rd.include(request, response);
+
+                        pw.println("<script>document.getElementById('message').innerHTML='" + status + "'</script>");
+                    }
+                }
 
 	}
 
