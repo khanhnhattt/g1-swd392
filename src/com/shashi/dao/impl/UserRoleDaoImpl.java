@@ -18,7 +18,7 @@ public class UserRoleDaoImpl implements UserRoleDao {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = con.prepareStatement("sect * from user_role where email=?");
+            ps = con.prepareStatement("select * from user_role where user_email=?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ps.setString(1, email);
             rs = ps.executeQuery();
             rs.last();
@@ -27,7 +27,7 @@ public class UserRoleDaoImpl implements UserRoleDao {
             int i = 0;
             while (rs.next()) {
                 userRole[i] = new UserRoleBean();
-                userRole[i].setUserEmail(rs.getString("email"));
+                userRole[i].setUserEmail(rs.getString("user_email"));
                 userRole[i].setRoleId(rs.getInt("role_id"));
                 i++;
             }
