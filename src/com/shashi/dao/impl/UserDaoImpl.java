@@ -29,7 +29,7 @@ public class UserDaoImpl implements UserDao {
                 user.setAddress(rs.getString("address"));
                 user.setPinCode(rs.getInt("pincode"));
                 user.setPassword(rs.getString("password"));
-                user.setActive(rs.getBoolean("isactive"));
+                user.setActive(rs.getBoolean("is_active"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -42,7 +42,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public UserBean findByEmail(String email) {
-        UserBean user = new UserBean();
+        UserBean user = null;
         Connection con = DBUtil.provideConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -73,10 +73,10 @@ public class UserDaoImpl implements UserDao {
         Connection con = DBUtil.provideConnection();
         PreparedStatement ps = null;
         try {
-            ps = con.prepareStatement("insert into user values(?,?,?,?,?,?,?,?)");
-            ps.setString(1, user.getName());
-            ps.setLong(2, user.getMobile());
-            ps.setString(3, user.getEmail());
+            ps = con.prepareStatement("insert into user values(?,?,?,?,?,?,?)");
+            ps.setString(1, user.getEmail());
+            ps.setString(2, user.getName());
+            ps.setLong(3, user.getMobile());
             ps.setString(4, user.getAddress());
             ps.setInt(5, user.getPinCode());
             ps.setString(6, user.getPassword());

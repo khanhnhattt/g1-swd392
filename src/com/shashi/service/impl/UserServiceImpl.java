@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
             UserRoleDao userRole = new UserRoleDaoImpl();
             userRole.insert(new UserRoleBean(newUser.getEmail(), 2));     // DEFAULT: 2 is the role id for user
             status = "User Registered Successfully!";
-            MailMessage.registrationSuccess(user.getEmail(), user.getName().split(" ")[0]);
+//            MailMessage.registrationSuccess(user.getEmail(), user.getName().split(" ")[0]);
         }
 
         return status;

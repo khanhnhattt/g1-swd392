@@ -1,6 +1,8 @@
 package com.shashi.srv;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -37,6 +39,7 @@ public class LoginSrv extends HttpServlet {
             // valid user
             UserBean user = userService.getUserDetails(userName, password);
             UserRoleBean[] userRole = userService.getUserRole(user.getEmail());
+            Arrays.sort(userRole, Comparator.comparingInt(UserRoleBean::getRoleId));
             HttpSession session = request.getSession();
             session.setAttribute("userdata", user);
 
