@@ -11,22 +11,25 @@ public class ProductBean implements Serializable {
 
 	private String prodId;
 	private String prodName;
-	private String prodType;
+	private int prodCategory;
 	private String prodInfo;
 	private double prodPrice;
 	private int prodQuantity;
 	private InputStream prodImage;
 
-	public ProductBean(String prodId, String prodName, String prodType, String prodInfo, double prodPrice,
-			int prodQuantity, InputStream prodImage) {
+	private boolean isActive;
+
+	public ProductBean(String prodId, String prodName, int prodCategory, String prodInfo, double prodPrice,
+					   int prodQuantity, InputStream prodImage, boolean isActive) {
 		super();
 		this.prodId = prodId;
 		this.prodName = prodName;
-		this.prodType = prodType;
+		this.prodCategory = prodCategory;
 		this.prodInfo = prodInfo;
 		this.prodPrice = prodPrice;
 		this.prodQuantity = prodQuantity;
 		this.prodImage = prodImage;
+		this.isActive = isActive;
 	}
 
 	public String getProdId() {
@@ -45,12 +48,12 @@ public class ProductBean implements Serializable {
 		this.prodName = prodName;
 	}
 
-	public String getProdType() {
-		return prodType;
+	public int getProdCategory() {
+		return prodCategory;
 	}
 
-	public void setProdType(String prodType) {
-		this.prodType = prodType;
+	public void setProdCategory(int prodCategory) {
+		this.prodCategory = prodCategory;
 	}
 
 	public String getProdInfo() {
@@ -85,4 +88,11 @@ public class ProductBean implements Serializable {
 		this.prodImage = prodImage;
 	}
 
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean active) {
+		isActive = active;
+	}
 }

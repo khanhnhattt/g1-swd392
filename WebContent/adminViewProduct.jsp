@@ -24,17 +24,17 @@
 	String password = (String) session.getAttribute("password");
 	String userType = (String) session.getAttribute("usertype");
 
-	if (userType == null || !userType.equals("admin")) {
-
-		response.sendRedirect("login.jsp?message=Access Denied, Login as admin!!");
-
-	}
-
-	else if (userName == null || password == null) {
-
-		response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
-
-	}
+//	if (userType == null || !userType.equals("admin")) {
+//
+//		response.sendRedirect("login.jsp?message=Access Denied, Login as admin!!");
+//
+//	}
+//
+//	else if (userName == null || password == null) {
+//
+//		response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
+//
+//	}
 	ProductServiceImpl prodDao = new ProductServiceImpl();
 	List<ProductBean> products = new ArrayList<ProductBean>();
 
@@ -79,6 +79,15 @@
 						)
 					</p>
 					<p class="productinfo"><%=product.getProdInfo()%></p>
+					<p class="productIsActive">
+						<% if (product.isActive()) {%>
+							<div>Is Active</div>
+						<%
+							} else {
+						%>
+							<div>Is not Active</div>
+						<% } %>
+					</p>
 					<p class="price">
 						Rs
 						<%=product.getProdPrice()%>
@@ -89,7 +98,7 @@
 							class="btn btn-danger">Remove Product</button>
 						&nbsp;&nbsp;&nbsp;
 						<button type="submit"
-							formaction="updateProduct.jsp?prodid=<%=product.getProdId()%>"
+							formaction="addProduct.jsp?prodid=<%=product.getProdId()%>&form=updateById"
 							class="btn btn-primary">Update Product</button>
 					</form>
 				</div>

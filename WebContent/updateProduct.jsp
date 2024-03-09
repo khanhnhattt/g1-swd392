@@ -27,13 +27,14 @@
 	if (prodid == null || product == null) {
 		response.sendRedirect("updateProductById.jsp?message=Please Enter a valid product Id");
 		return;
-	} else if (utype == null || !utype.equals("admin")) {
-		response.sendRedirect("login.jsp?message=Access Denied, Login as admin!!");
-		return;
-	} else if (uname == null || pwd == null) {
-		response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
-		return;
 	}
+//	else if (utype == null || !utype.equals("admin")) {
+//		response.sendRedirect("login.jsp?message=Access Denied, Login as admin!!");
+//		return;
+//	} else if (uname == null || pwd == null) {
+//		response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
+//		return;
+//	}
 	%>
 
 	<jsp:include page="header.jsp" />
@@ -76,25 +77,20 @@
 					</div>
 					<div class="col-md-6 form-group">
 						<%
-						String ptype = product.getProdType();
+						int ptype = product.getProdCategory();
 						%>
 						<label for="producttype">Product Type</label> <select name="type"
 							id="producttype" class="form-control" required>
-							<option value="mobile"
-								<%="mobile".equalsIgnoreCase(ptype) ? "selected" : ""%>>MOBILE</option>
-							<option value="tv"
-								<%="tv".equalsIgnoreCase(ptype) ? "selected" : ""%>>TV</option>
-							<option value="camera"
-								<%="camera".equalsIgnoreCase(ptype) ? "selected" : ""%>>CAMERA</option>
-							<option value="laptop"
-								<%="laptop".equalsIgnoreCase(ptype) ? "selected" : ""%>>LAPTOP</option>
-							<option value="tablet"
-								<%="tablet".equalsIgnoreCase(ptype) ? "selected" : ""%>>TABLET</option>
-							<option value="speaker"
-								<%="speaker".equalsIgnoreCase(ptype) ? "selected" : ""%>>SPEAKER</option>
-							<option value="other"
-								<%="other".equalsIgnoreCase(ptype) ? "selected" : ""%>>Some
-								Other Appliances</option>
+							<option value="2"
+								<%= ptype == 2 ? "selected" : ""%>>MOBILE</option>
+							<option value="3"
+								<%=ptype == 3  ? "selected" : ""%>>TV</option>
+							<option value="4"
+								<%=ptype == 4  ? "selected" : ""%>>CAMERA</option>
+							<option value="1"
+								<%=ptype == 1  ? "selected" : ""%>>LAPTOP</option>
+							<option value="5"
+								<%=ptype == 5  ? "selected" : ""%>>SPEAKER</option>
 						</select>
 					</div>
 				</div>
