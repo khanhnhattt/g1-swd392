@@ -1,5 +1,6 @@
 package com.shashi.srv;
 
+import java.io.Console;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -31,29 +32,28 @@ public class AddProductSrv extends HttpServlet {
 		String userName = (String) session.getAttribute("username");
 		String password = (String) session.getAttribute("password");
 
-		if (userType == null || !userType.equals("admin")) {
-
-			response.sendRedirect("login.jsp?message=Access Denied!");
-
-		}
-
-		else if (userName == null || password == null) {
-
-			response.sendRedirect("login.jsp?message=Session Expired, Login Again to Continue!");
-		}
+//		if (userType == null || !userType.equals("admin")) {
+//
+//			response.sendRedirect("login.jsp?message=Access Denied!");
+//			return;
+//		}
+//		else if (userName == null || password == null) {
+//			response.sendRedirect("login.jsp?message=Session Expired, Login Again to Continue!");
+//			return;
+//		}
 
 		String status = "Product Registration Failed!";
 		String prodName = request.getParameter("name");
-		String prodType = request.getParameter("type");
+		int prodType =Integer.parseInt(request.getParameter("type")) ;
 		String prodInfo = request.getParameter("info");
 		double prodPrice = Double.parseDouble(request.getParameter("price"));
 		int prodQuantity = Integer.parseInt(request.getParameter("quantity"));
 
 		Part part = request.getPart("image");
 
-		InputStream inputStream = part.getInputStream();
+//		InputStream inputStream = part.getInputStream();
 
-		InputStream prodImage = inputStream;
+		InputStream prodImage = part.getInputStream();
 
 		ProductServiceImpl product = new ProductServiceImpl();
 
