@@ -99,8 +99,9 @@
 							formaction="./AddtoCart?uid=<%=userName%>&pid=<%=product.getProdId()%>&pqty=0"
 							class="btn btn-danger">Remove From Cart</button>
 						&nbsp;&nbsp;&nbsp;
-						<button type="submit" formaction="cartDetails.jsp"
-							class="btn btn-success">Checkout</button>
+						<button type="submit"
+							formaction="./AddtoCart?uid=<%=userName%>&pid=<%=product.getProdId()%>&pqty=1"
+							class="btn btn-primary">Checkout</button>
 						<%
 						}
 						%>
