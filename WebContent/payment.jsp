@@ -135,7 +135,7 @@
 				<tr>
 					<td><%=product.getProdId()%></td>
 					<td><%=product.getProdName()%></td>
-					<td><%=product.getProdType()%></td>
+					<td><%=product.getProdCategory()%></td>
 					<td><%=product.getProdPrice()%></td>
 					<td><%=prodQuantity%></td>
 					<td><%=product.getProdPrice()*prodQuantity%></td>
