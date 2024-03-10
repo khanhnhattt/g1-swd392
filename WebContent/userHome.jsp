@@ -90,7 +90,7 @@
 							class="btn btn-success">Add to Cart</button>
 						&nbsp;&nbsp;&nbsp;
 						<button type="submit"
-							formaction="./AddtoCart?uid=<%=userName%>&pid=<%=product.getProdId()%>&pqty=1"
+							formaction="payment.jsp?amount=<%=product.getProdPrice()%>"
 							class="btn btn-primary">Buy Now</button>
 						<%
 						} else {
@@ -100,7 +100,7 @@
 							class="btn btn-danger">Remove From Cart</button>
 						&nbsp;&nbsp;&nbsp;
 						<button type="submit"
-							formaction="./AddtoCart?uid=<%=userName%>&pid=<%=product.getProdId()%>&pqty=1"
+							formaction="payment.jsp?amount=<%=product.getProdPrice()%>"
 							class="btn btn-primary">Checkout</button>
 						<%
 						}
