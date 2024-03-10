@@ -1,7 +1,10 @@
+<%@page import="java.net.URLDecoder"%>
+<%@page import="java.util.Iterator"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page import="com.shashi.service.impl.*, com.shashi.service.*"%>
-
+<%@ page import="org.json.JSONObject" %>
+<%@ page import="javax.servlet.http.Cookie" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,6 +34,26 @@
 	<!-- Company Header Ending -->
 
 	<%
+        Cookie[] cookies = request.getCookies();
+            String cartJson = null;
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("cart")) {
+                        cartJson = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                        break;
+                    }
+                }
+            }
+
+            int count = 0;
+            if (cartJson != null) {
+                JSONObject cart = new JSONObject(cartJson);
+                Iterator<String> keys = cart.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    count += cart.getInt(key);
+                }
+            }
 	/* Checking the user credentials */
 	String userType = (String) session.getAttribute("usertype");
 	if (userType == null) { //LOGGED OUT
@@ -45,10 +68,10 @@
 					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="index.jsp"><span
+				<a class="navbar-brand" href="/"><span
 					class="glyphicon glyphicon-home">&nbsp;</span>Shopping Center</a>
                                 <ul class="nav navbar-nav navbar-left">
-                                    <li><a href="index.jsp">Products</a></li>
+                                    <li><a href="/">Products</a></li>
                                     <li class="dropdown"><a class="dropdown-toggle"
 					data-toggle="dropdown" href="#">Category <span class="caret"></span>
 					</a>
@@ -74,7 +97,6 @@
 			</div>
 			<div class="collapse navbar-collapse" id="myNavbar">
 				<ul class="nav navbar-nav navbar-right">
-                                    <% int count = new CartServiceImpl().countGuestCart(session.getId());%>
                                     <li><a href="cartDetails.jsp"
                                            style="margin: 0px; padding: 0px;" id="mycart"><i
                                                 data-count="<%=count%>"

@@ -49,7 +49,7 @@ public class LoginSrv extends HttpServlet {
             // 1 is admin
             // 2 is user
             // apply admin if available
-            String userType = userRole[0].getRoleId() == 1 ? "admin" : "user";
+            String userType = userRole[0].getRoleId() == 1 ? "admin" : "customer";
             session.setAttribute("usertype", userType);
 
             RequestDispatcher rd = null;

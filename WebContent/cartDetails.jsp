@@ -1,3 +1,7 @@
+<%@page import="java.net.URLEncoder"%>
+<%@page import="org.json.JSONObject"%>
+<%@page import="org.json.JSONArray"%>
+<%@page import="java.net.URLDecoder"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@ page
@@ -36,18 +40,54 @@
 		int avail = Integer.parseInt(request.getParameter("avail"));
 		int cartQty = Integer.parseInt(request.getParameter("qty"));
 		CartServiceImpl cart = new CartServiceImpl();
+                String cartJson = null;
+                Cookie[] cookies = request.getCookies();
+                if (cookies != null) {
+                    for (Cookie cookie : cookies) {
+                        if (cookie.getName().equals("cart")) {
+                            cartJson = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                            break;
+                        }
+                    }
+               }
                 if (userName == null) {
                     if (add == 1) {
 			//Add Product into the cart
 			cartQty += 1;
 			if (cartQty <= avail) {
-                            cart.addProductToGuestCart(session.getId(), pid, 1);
-			} else {
-                            response.sendRedirect("./AddtoCart?pid=" + pid + "&pqty=" + cartQty);
+                            JSONObject cartJ;
+                                if (cartJson == null) {
+                                    cartJ = new JSONObject();
+                                } else {
+                                    cartJ = new JSONObject(cartJson);
+                                }
+                                if (cartJ.has(pid)) {
+                                    cartJ.put(pid, cartJ.getInt(pid) + 1);
+                                } else {
+                                    cartJ.put(pid, 1);
+                                }
+                                String updatedCartJson = cartJ.toString();
+                                Cookie cartCookie = new Cookie("cart", URLEncoder.encode(updatedCartJson, "UTF-8"));
+                                response.addCookie(cartCookie);
+                                response.sendRedirect("cartDetails.jsp");
 			}
                     } else if (add == 0) {
 			//Remove Product from the cart
-			cart.removeProductFromGuestCart(session.getId(), pid);
+			JSONObject cartJ;
+                        if (cartJson != null) {
+                            cartJ = new JSONObject(cartJson);
+                            if (cartJ.has(pid)) {
+                                if (cartJ.getInt(pid) == 1) {
+                                    cartJ.remove(pid);
+                                } else {
+                                    cartJ.put(pid, cartJ.getInt(pid) - 1);
+                                }
+                                String updatedCartJson = cartJ.toString();
+                                Cookie cartCookie = new Cookie("cart", URLEncoder.encode(updatedCartJson, "UTF-8"));
+                                response.addCookie(cartCookie);
+                            }
+                        }
+                        response.sendRedirect("cartDetails.jsp");
                     }
                 } else {
                     if (add == 1) {
@@ -100,7 +140,33 @@
 				CartServiceImpl cart = new CartServiceImpl();
 				List<CartBean> cartItems = new ArrayList<CartBean>();
                                 if (userName == null) {
-                                    cartItems = cart.getAllGuestCartItems(session.getId());
+                                    Cookie[] cookies = request.getCookies();
+                                        String cartJson = null;
+                                        if (cookies != null) {
+                                            for (Cookie cookie : cookies) {
+                                                if (cookie.getName().equals("cart")) {
+                                                    try {
+                                                        cartJson = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                                                        break;
+                                                    } catch (UnsupportedEncodingException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if (cartJson != null) {
+                                                JSONObject jsonArray = new JSONObject(cartJson);
+                                                Iterator<String> keys = jsonArray.keys();
+                                                while (keys.hasNext()) {
+                                                    String key = keys.next();
+                                                    int quantity = jsonArray.getInt(key);
+                                                    CartBean cartItem = new CartBean();
+                                                    cartItem.setProdId(key);
+                                                    cartItem.setQuantity(quantity);
+                                                    cartItems.add(cartItem);
+                                                }
+                                            }
                                 } else {
                                     cartItems = cart.getAllCartItems(userName);
                                 }
