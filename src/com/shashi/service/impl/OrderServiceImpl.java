@@ -17,285 +17,315 @@ import com.shashi.utility.MailMessage;
 
 public class OrderServiceImpl implements OrderService {
 
-	@Override
-	public String paymentSuccess(String userName, double paidAmount) {
-		String status = "Order Placement Failed!";
+    @Override
+    public String paymentSuccess(String userName, double paidAmount, String sessionId) {
+        String status = "Order Placement Failed!";
+
+        List<CartBean> cartItems = new ArrayList<CartBean>();
+        List<CartBean> guestCarts = new ArrayList<CartBean>();
+        cartItems = new CartServiceImpl().getAllGuestCartItems(sessionId);
+        guestCarts = new CartServiceImpl().getAllGuestCartItems(sessionId);
+        if (cartItems.isEmpty() && guestCarts.isEmpty())
+            return status;
+
+        TransactionBean transaction = new TransactionBean(userName, paidAmount);
+        boolean ordered = false;
+
+        String transactionId = transaction.getTransactionId();
+
+        // System.out.println("Transaction: "+transaction.getTransactionId()+"
+        // "+transaction.getTransAmount()+" "+transaction.getUserName()+"
+        // "+transaction.getTransDateTime());
+        if(guestCarts == null){
+            for (CartBean item : cartItems) {
+
+                double amount = new ProductServiceImpl().getProductPrice(item.getProdId()) * item.getQuantity();
 
-		List<CartBean> cartItems = new ArrayList<CartBean>();
-		cartItems = new CartServiceImpl().getAllCartItems(userName);
+                OrderBean order = new OrderBean(transactionId, item.getProdId(), item.getQuantity(), amount);
+
+                ordered = addOrder(order);
+                if (!ordered) {
+                    break;
+                }
+                else {
+                    ordered = new CartServiceImpl().removeAProduct(userName, item.getProdId());
+                }
 
-		if (cartItems.size() == 0)
-			return status;
+                if (!ordered) {
+                    break;
+                }
+                else
+                    ordered = new ProductServiceImpl().sellNProduct(item.getProdId(), item.getQuantity());
 
-		TransactionBean transaction = new TransactionBean(userName, paidAmount);
-		boolean ordered = false;
+                if (!ordered) {
+                    break;
+                }
+            }
+        }else {
+            for (CartBean item : guestCarts) {
 
-		String transactionId = transaction.getTransactionId();
+                double amount = new ProductServiceImpl().getProductPrice(item.getProdId()) * item.getQuantity();
 
-		// System.out.println("Transaction: "+transaction.getTransactionId()+"
-		// "+transaction.getTransAmount()+" "+transaction.getUserName()+"
-		// "+transaction.getTransDateTime());
+                OrderBean order = new OrderBean(transactionId, item.getProdId(), item.getQuantity(), amount);
 
-		for (CartBean item : cartItems) {
+                ordered = addOrder(order);
+                if (!ordered) {
+                    break;
+                }
+                else {
+                    ordered = new CartServiceImpl().removeGProduct(sessionId, item.getProdId());
+                }
 
-			double amount = new ProductServiceImpl().getProductPrice(item.getProdId()) * item.getQuantity();
+                if (!ordered) {
+                    break;
+                }
+                else
+                    ordered = new ProductServiceImpl().sellNProduct(item.getProdId(), item.getQuantity());
 
-			OrderBean order = new OrderBean(transactionId, item.getProdId(), item.getQuantity(), amount);
+                if (!ordered) {
+                    break;
+                }
+            }
+        }
 
-			ordered = addOrder(order);
-			if (!ordered)
-				break;
-			else {
-				ordered = new CartServiceImpl().removeAProduct(item.getUserId(), item.getProdId());
-			}
 
-			if (!ordered)
-				break;
-			else
-				ordered = new ProductServiceImpl().sellNProduct(item.getProdId(), item.getQuantity());
+        if (ordered) {
+            ordered = new OrderServiceImpl().addTransaction(transaction);
+            if (ordered == true) {
 
-			if (!ordered)
-				break;
-		}
+//                MailMessage.transactionSuccess(userName, new UserServiceImpl().getFName(userName),
+//                        transaction.getTransactionId(), transaction.getTransAmount());
+                status = "Order Placed Successfully!";
+            }
+        }
 
-		if (ordered) {
-			ordered = new OrderServiceImpl().addTransaction(transaction);
-			if (ordered) {
+        return status;
+    }
 
-				MailMessage.transactionSuccess(userName, new UserServiceImpl().getFName(userName),
-						transaction.getTransactionId(), transaction.getTransAmount());
+    @Override
+    public boolean addOrder(OrderBean order) {
+        boolean flag = false;
 
-				status = "Order Placed Successfully!";
-			}
-		}
+        Connection con = DBUtil.provideConnection();
 
-		return status;
-	}
+        PreparedStatement ps = null;
 
-	@Override
-	public boolean addOrder(OrderBean order) {
-		boolean flag = false;
+        try {
+            ps = con.prepareStatement("insert into orders values(?,?,?,?,?)");
 
-		Connection con = DBUtil.provideConnection();
+            ps.setString(1, order.getTransactionId());
+            ps.setString(2, order.getProductId());
+            ps.setInt(3, order.getQuantity());
+            ps.setDouble(4, order.getAmount());
+            ps.setInt(5, 0);
 
-		PreparedStatement ps = null;
+            int k = ps.executeUpdate();
 
-		try {
-			ps = con.prepareStatement("insert into orders values(?,?,?,?,?)");
+            if (k > 0)
+                flag = true;
 
-			ps.setString(1, order.getTransactionId());
-			ps.setString(2, order.getProductId());
-			ps.setInt(3, order.getQuantity());
-			ps.setDouble(4, order.getAmount());
-			ps.setInt(5, 0);
+        } catch (SQLException e) {
+            flag = false;
+            e.printStackTrace();
+        }
 
-			int k = ps.executeUpdate();
+        return flag;
+    }
 
-			if (k > 0)
-				flag = true;
+    @Override
+    public boolean addTransaction(TransactionBean transaction) {
+        boolean flag = false;
 
-		} catch (SQLException e) {
-			flag = false;
-			e.printStackTrace();
-		}
+        Connection con = DBUtil.provideConnection();
 
-		return flag;
-	}
+        PreparedStatement ps = null;
 
-	@Override
-	public boolean addTransaction(TransactionBean transaction) {
-		boolean flag = false;
+        try {
+            ps = con.prepareStatement("insert into transactions values(?,?,?,?)");
 
-		Connection con = DBUtil.provideConnection();
+            ps.setString(1, transaction.getTransactionId());
+            ps.setString(2, transaction.getUserName());
+            ps.setTimestamp(3, transaction.getTransDateTime());
+            ps.setDouble(4, transaction.getTransAmount());
 
-		PreparedStatement ps = null;
+            int k = ps.executeUpdate();
 
-		try {
-			ps = con.prepareStatement("insert into transactions values(?,?,?,?)");
+            if (k > 0)
+                flag = true;
 
-			ps.setString(1, transaction.getTransactionId());
-			ps.setString(2, transaction.getUserName());
-			ps.setTimestamp(3, transaction.getTransDateTime());
-			ps.setDouble(4, transaction.getTransAmount());
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-			int k = ps.executeUpdate();
+        return flag;
+    }
 
-			if (k > 0)
-				flag = true;
+    @Override
+    public int countSoldItem(String prodId) {
+        int count = 0;
 
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        Connection con = DBUtil.provideConnection();
 
-		return flag;
-	}
+        PreparedStatement ps = null;
 
-	@Override
-	public int countSoldItem(String prodId) {
-		int count = 0;
+        ResultSet rs = null;
 
-		Connection con = DBUtil.provideConnection();
+        try {
+            ps = con.prepareStatement("select sum(quantity) from orders where prodid=?");
 
-		PreparedStatement ps = null;
+            ps.setString(1, prodId);
 
-		ResultSet rs = null;
+            rs = ps.executeQuery();
 
-		try {
-			ps = con.prepareStatement("select sum(quantity) from orders where prodid=?");
+            if (rs.next())
+                count = rs.getInt(1);
 
-			ps.setString(1, prodId);
+        } catch (SQLException e) {
+            count = 0;
+            e.printStackTrace();
+        }
 
-			rs = ps.executeQuery();
+        DBUtil.closeConnection(con);
+        DBUtil.closeConnection(ps);
+        DBUtil.closeConnection(rs);
 
-			if (rs.next())
-				count = rs.getInt(1);
+        return count;
+    }
 
-		} catch (SQLException e) {
-			count = 0;
-			e.printStackTrace();
-		}
+    @Override
+    public List<OrderBean> getAllOrders() {
+        List<OrderBean> orderList = new ArrayList<OrderBean>();
 
-		DBUtil.closeConnection(con);
-		DBUtil.closeConnection(ps);
-		DBUtil.closeConnection(rs);
+        Connection con = DBUtil.provideConnection();
 
-		return count;
-	}
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-	@Override
-	public List<OrderBean> getAllOrders() {
-		List<OrderBean> orderList = new ArrayList<OrderBean>();
+        try {
 
-		Connection con = DBUtil.provideConnection();
+            ps = con.prepareStatement("select * from orders");
 
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+            rs = ps.executeQuery();
 
-		try {
+            while (rs.next()) {
 
-			ps = con.prepareStatement("select * from orders");
+                OrderBean order = new OrderBean(rs.getString("orderid"), rs.getString("prodid"), rs.getInt("quantity"),
+                        rs.getDouble("amount"), rs.getInt("shipped"));
 
-			rs = ps.executeQuery();
+                orderList.add(order);
 
-			while (rs.next()) {
+            }
 
-				OrderBean order = new OrderBean(rs.getString("orderid"), rs.getString("prodid"), rs.getInt("quantity"),
-						rs.getDouble("amount"), rs.getInt("shipped"));
+        } catch (SQLException e) {
 
-				orderList.add(order);
+            e.printStackTrace();
+        }
 
-			}
+        return orderList;
+    }
 
-		} catch (SQLException e) {
+    @Override
+    public List<OrderBean> getOrdersByUserId(String emailId) {
+        List<OrderBean> orderList = new ArrayList<OrderBean>();
 
-			e.printStackTrace();
-		}
+        Connection con = DBUtil.provideConnection();
 
-		return orderList;
-	}
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-	@Override
-	public List<OrderBean> getOrdersByUserId(String emailId) {
-		List<OrderBean> orderList = new ArrayList<OrderBean>();
+        try {
 
-		Connection con = DBUtil.provideConnection();
+            ps = con.prepareStatement(
+                    "SELECT * FROM orders o inner join transactions t on o.orderid = t.transid where username=?");
+            ps.setString(1, emailId);
+            rs = ps.executeQuery();
 
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+            while (rs.next()) {
 
-		try {
+                OrderBean order = new OrderBean(rs.getString("t.transid"), rs.getString("t.prodid"),
+                        rs.getInt("quantity"), rs.getDouble("t.amount"), rs.getInt("shipped"));
 
-			ps = con.prepareStatement(
-					"SELECT * FROM orders o inner join transactions t on o.orderid = t.transid where username=?");
-			ps.setString(1, emailId);
-			rs = ps.executeQuery();
+                orderList.add(order);
 
-			while (rs.next()) {
+            }
 
-				OrderBean order = new OrderBean(rs.getString("t.transid"), rs.getString("t.prodid"),
-						rs.getInt("quantity"), rs.getDouble("t.amount"), rs.getInt("shipped"));
+        } catch (SQLException e) {
 
-				orderList.add(order);
+            e.printStackTrace();
+        }
 
-			}
+        return orderList;
+    }
 
-		} catch (SQLException e) {
+    @Override
+    public List<OrderDetails> getAllOrderDetails(String userEmailId) {
+        List<OrderDetails> orderList = new ArrayList<OrderDetails>();
 
-			e.printStackTrace();
-		}
+        Connection con = DBUtil.provideConnection();
 
-		return orderList;
-	}
+        PreparedStatement ps = null;
+        ResultSet rs = null;
 
-	@Override
-	public List<OrderDetails> getAllOrderDetails(String userEmailId) {
-		List<OrderDetails> orderList = new ArrayList<OrderDetails>();
+        try {
 
-		Connection con = DBUtil.provideConnection();
+            ps = con.prepareStatement(
+                    "SELECT  p.pid as prodid, o.orderid as orderid, o.shipped as shipped, p.image as image, p.pname as pname, o.quantity as qty, o.amount as amount, t.time as time FROM orders o, product p, transactions t where o.orderid=t.transid and o.orderid = t.transid and p.pid=o.prodid and t.username=?");
+            ps.setString(1, userEmailId);
+            rs = ps.executeQuery();
 
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+            while (rs.next()) {
 
-		try {
+                OrderDetails order = new OrderDetails();
+                order.setOrderId(rs.getString("orderid"));
+                order.setProdImage(rs.getAsciiStream("image"));
+                order.setProdName(rs.getString("pname"));
+                order.setQty(rs.getString("qty"));
+                order.setAmount(rs.getString("amount"));
+                order.setTime(rs.getTimestamp("time"));
+                order.setProductId(rs.getString("prodid"));
+                order.setShipped(rs.getInt("shipped"));
+                orderList.add(order);
 
-			ps = con.prepareStatement(
-					"SELECT  p.pid as prodid, o.orderid as orderid, o.shipped as shipped, p.image as image, p.pname as pname, o.quantity as qty, o.amount as amount, t.time as time FROM orders o, product p, transactions t where o.orderid=t.transid and o.orderid = t.transid and p.pid=o.prodid and t.username=?");
-			ps.setString(1, userEmailId);
-			rs = ps.executeQuery();
+            }
 
-			while (rs.next()) {
+        } catch (SQLException e) {
 
-				OrderDetails order = new OrderDetails();
-				order.setOrderId(rs.getString("orderid"));
-				order.setProdImage(rs.getAsciiStream("image"));
-				order.setProdName(rs.getString("pname"));
-				order.setQty(rs.getString("qty"));
-				order.setAmount(rs.getString("amount"));
-				order.setTime(rs.getTimestamp("time"));
-				order.setProductId(rs.getString("prodid"));
-				order.setShipped(rs.getInt("shipped"));
-				orderList.add(order);
+            e.printStackTrace();
+        }
 
-			}
+        return orderList;
+    }
 
-		} catch (SQLException e) {
+    @Override
+    public String shipNow(String orderId, String prodId) {
+        String status = "FAILURE";
 
-			e.printStackTrace();
-		}
+        Connection con = DBUtil.provideConnection();
 
-		return orderList;
-	}
+        PreparedStatement ps = null;
 
-	@Override
-	public String shipNow(String orderId, String prodId) {
-		String status = "FAILURE";
+        try {
+            ps = con.prepareStatement("update orders set shipped=1 where orderid=? and prodid=? and shipped=0");
 
-		Connection con = DBUtil.provideConnection();
+            ps.setString(1, orderId);
+            ps.setString(2, prodId);
 
-		PreparedStatement ps = null;
+            int k = ps.executeUpdate();
 
-		try {
-			ps = con.prepareStatement("update orders set shipped=1 where orderid=? and prodid=? and shipped=0");
+            if (k > 0) {
+                status = "Order Has been shipped successfully!!";
+            }
 
-			ps.setString(1, orderId);
-			ps.setString(2, prodId);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-			int k = ps.executeUpdate();
+        DBUtil.closeConnection(con);
+        DBUtil.closeConnection(ps);
 
-			if (k > 0) {
-				status = "Order Has been shipped successfully!!";
-			}
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		DBUtil.closeConnection(con);
-		DBUtil.closeConnection(ps);
-
-		return status;
-	}
+        return status;
+    }
 
 }

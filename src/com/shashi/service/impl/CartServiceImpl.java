@@ -255,6 +255,36 @@ public class CartServiceImpl implements CartService {
 
 		return flag;
 	}
+	public boolean removeGProduct(String sessionId, String prodId) {
+		boolean flag = false;
+
+		Connection con = DBUtil.provideConnection();
+
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+
+			ps = con.prepareStatement("delete from guestcart where sessionId=? and productId=?");
+			ps.setString(1, sessionId);
+			ps.setString(2, prodId);
+
+			int k = ps.executeUpdate();
+
+			if (k > 0)
+				flag = true;
+
+		} catch (SQLException e) {
+			flag = false;
+			e.printStackTrace();
+		}
+
+		DBUtil.closeConnection(con);
+		DBUtil.closeConnection(ps);
+		DBUtil.closeConnection(rs);
+
+		return flag;
+	}
 
 	@Override
 	public String updateProductToCart(String userId, String prodId, int prodQty) {
@@ -390,4 +420,21 @@ public class CartServiceImpl implements CartService {
 
 		return count;
 	}
+
+	public void deleteProductFromCart(String userId, String prodId) {
+		Connection con = DBUtil.provideConnection();
+
+		PreparedStatement ps = null;
+		try{
+			ps = con.prepareStatement("delete from usercart where username=? and prodid=?");
+			ps.setString(1, userId);
+			ps.setString(2, prodId);
+			ps.executeUpdate();
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		DBUtil.closeConnection(con);
+		DBUtil.closeConnection(ps);
+	}
+
 }

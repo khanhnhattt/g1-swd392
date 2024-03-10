@@ -24,16 +24,11 @@ public class OrderServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		HttpSession session = request.getSession();
-		String userName = (String) session.getAttribute("username");
-		String password = (String) session.getAttribute("password");
+		String userName = (request.getParameter("username") != null) ? request.getParameter("username") : (String) session.getAttribute("username");
 
-		if (userName == null || password == null) {
-
-			response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
-		}
-
+		String sessionId = session.getId();
 		double paidAmount = Double.parseDouble(request.getParameter("amount"));
-		String status = new OrderServiceImpl().paymentSuccess(userName, paidAmount);
+		String status = new OrderServiceImpl().paymentSuccess(userName, paidAmount, sessionId);
 
 		PrintWriter pw = response.getWriter();
 		response.setContentType("text/html");

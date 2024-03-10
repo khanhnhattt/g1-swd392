@@ -192,10 +192,10 @@
 					<td><%=product.getProdName()%></td>
 					<td><%=product.getProdPrice()%></td>
 					<td><form method="post" action="./UpdateToCart">
-							<input type="number" name="pqty" value="<%=prodQuantity%>"
+							<input type="number" disabled name="pqty" value="<%=prodQuantity%>"
 								style="max-width: 70px;" min="0"> <input type="hidden"
 								name="pid" value="<%=product.getProdId()%>"> <input
-								type="submit" name="Update" value="Update"
+								type="submit" name="Remove" value="Remove"
 								style="max-width: 80px;">
 						</form></td>
 					<td><a
@@ -223,12 +223,12 @@
 				<tr style="background-color: grey; color: white;">
 					<td colspan="4" style="text-align: center;">
 					<td><form method="post">
-							<button formaction="userHome.jsp"
-								style="background-color: black; color: white;">Cancel</button>
+							<button formaction="index.jsp"
+								style="background-color: black; color: white;">Back To Shopping</button>
 						</form></td>
 					<td colspan="2" align="center"><form method="post">
 							<button style="background-color: blue; color: white;"
-								formaction="payment.jsp?amount=<%=totAmount%>">Pay Now</button>
+								formaction="payment.jsp?amount=<%=totAmount%>">Check Out</button>
 						</form></td>
 
 				</tr>
