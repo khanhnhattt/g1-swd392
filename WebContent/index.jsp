@@ -83,9 +83,13 @@
 							formaction="./AddtoCart?uid=<%=session.getId()%>&pid=<%=product.getProdId()%>&pqty=1"
 							class="btn btn-success">Add to Cart</button>
 						&nbsp;&nbsp;&nbsp;
-						<button type="submit"
-							formaction="payment.jsp?amount=<%=product.getProdPrice()%>"
-							class="btn btn-primary">Buy Now</button>
+<%--						<button type="submit"--%>
+<%--							formaction="payment.jsp?buyNow=1&amount=<%=product.getProdPrice()%>&pid=<%=product.getProdId()%>--%>
+<%--													&pName=<%=product.getProdName()%>&pType=<%=product.getProdType()%>"--%>
+<%--							class="btn btn-primary">Buy Now</button>--%>
+                        <button type="submit"
+                                formaction="./AddtoCart?uid=<%=session.getId()%>&pid=<%=product.getProdId()%>&pqty=1"
+                                class="btn btn-primary">Buy now</button>
 						<%
 						} else {
 						%>

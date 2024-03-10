@@ -45,6 +45,9 @@ public class LoginSrv extends HttpServlet {
 
             session.setAttribute("username", user.getEmail());
             session.setAttribute("password", user.getPassword());
+            session.setAttribute("name", user.getName());
+            session.setAttribute("address", user.getAddress());
+            session.setAttribute("phone", user.getMobile());
 
             // 1 is admin
             // 2 is user
