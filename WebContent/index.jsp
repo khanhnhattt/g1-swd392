@@ -130,9 +130,13 @@
                             }
 
                             for (ProductBean product : products) {
+                                JSONObject cart = null;
                                 if (cartJson != null) {
-                                    JSONObject cart = new JSONObject(cartJson);
-                                    String prodId = product.getProdId();
+                                   cart  = new JSONObject(cartJson);
+                                } else {
+                                    cart = new JSONObject();
+                                }
+                                String prodId = product.getProdId();
 			%>
 			<div class="col-sm-4" style='height: 350px;'>
 				<div class="thumbnail">
@@ -179,9 +183,6 @@
 				</div>
 			</div>
 
-			<%
-			}
-			%>
                     <%
                     }
                     }
