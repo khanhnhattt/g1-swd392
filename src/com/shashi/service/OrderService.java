@@ -5,10 +5,11 @@ import java.util.List;
 import com.shashi.beans.OrderBean;
 import com.shashi.beans.OrderDetails;
 import com.shashi.beans.TransactionBean;
+import javax.servlet.http.HttpServletRequest;
 
 public interface OrderService {
 
-	public String paymentSuccess(String userName, double paidAmount, String sessionId);
+	public String paymentSuccess(String userName, double paidAmount, String sessionId, HttpServletRequest request);
 
 	public boolean addOrder(OrderBean order);
 

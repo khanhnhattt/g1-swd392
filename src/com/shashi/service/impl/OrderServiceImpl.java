@@ -14,17 +14,46 @@ import com.shashi.beans.TransactionBean;
 import com.shashi.service.OrderService;
 import com.shashi.utility.DBUtil;
 import com.shashi.utility.MailMessage;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Iterator;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import org.json.JSONObject;
 
 public class OrderServiceImpl implements OrderService {
 
-    @Override
-    public String paymentSuccess(String userName, double paidAmount, String sessionId) {
+    public String paymentSuccess(String userName, double paidAmount, String sessionId, HttpServletRequest request) {
         String status = "Order Placement Failed!";
 
         List<CartBean> cartItems = new ArrayList<CartBean>();
         List<CartBean> guestCarts = new ArrayList<CartBean>();
-        cartItems = new CartServiceImpl().getAllGuestCartItems(sessionId);
-        guestCarts = new CartServiceImpl().getAllGuestCartItems(sessionId);
+        cartItems = new CartServiceImpl().getAllCartItems(userName);
+        String cartJson = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("cart")) {
+                    try {
+                        cartJson = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        // X? lý ngo?i l? ? ?ây (ví d?: in thông báo l?i)
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+        }
+        if (cartJson != null && !cartJson.isEmpty()) {
+            JSONObject guestCartJson = new JSONObject(cartJson);
+            Iterator<String> keys = guestCartJson.keys();
+            while (keys.hasNext()) {
+                String key = keys.next();
+                String productId = key;
+                int quantity = guestCartJson.getInt(key);
+                guestCarts.add(new CartBean(request.getSession().getId(), productId, quantity));
+            }
+        }
         if (cartItems.isEmpty() && guestCarts.isEmpty())
             return status;
 
