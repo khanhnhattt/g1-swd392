@@ -221,7 +221,7 @@ public class ProductDaoImpl {
         ResultSet rs = null;
 
         try {
-            ps = con.prepareStatement("SELECT * FROM `shopping-cart`.product where lower(pcategory) like ?;");
+            ps = con.prepareStatement("select * from product p left join category c on p.pcategory = c.cateId where lower(c.cateName) like ?;");
             ps.setString(1, "%" + type + "%");
             rs = ps.executeQuery();
 
