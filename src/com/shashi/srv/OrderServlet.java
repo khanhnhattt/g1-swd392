@@ -28,7 +28,7 @@ public class OrderServlet extends HttpServlet {
 
 		String sessionId = session.getId();
 		double paidAmount = Double.parseDouble(request.getParameter("amount"));
-		String status = new OrderServiceImpl().paymentSuccess(userName, paidAmount, sessionId);
+		String status = new OrderServiceImpl().paymentSuccess(userName, paidAmount, sessionId, request);
 
 		PrintWriter pw = response.getWriter();
 		response.setContentType("text/html");

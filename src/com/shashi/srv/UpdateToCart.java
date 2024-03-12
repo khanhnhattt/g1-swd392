@@ -16,6 +16,10 @@ import com.shashi.beans.ProductBean;
 import com.shashi.service.impl.CartServiceImpl;
 import com.shashi.service.impl.DemandServiceImpl;
 import com.shashi.service.impl.ProductServiceImpl;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import javax.servlet.http.Cookie;
+import org.json.JSONObject;
 
 /**
  * Servlet implementation class UpdateToCart
@@ -41,7 +45,26 @@ public class UpdateToCart extends HttpServlet {
 		if (userName != null || password != null) {
             cart.deleteProductFromCart(userName,prodId);
 		}else{
-			cart.deleteProductFromGuestCart(sessId, prodId);
+                    String cartJson = null;
+                    Cookie[] cookies = request.getCookies();
+                    if (cookies != null) {
+                        for (Cookie cookie : cookies) {
+                            if (cookie.getName().equals("cart")) {
+                                cartJson = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                                break;
+                            }
+                        }
+                    }
+                    if (cartJson != null && !cartJson.isEmpty()) {
+                        JSONObject cartJObject = new JSONObject(cartJson);
+
+                        if (cartJObject.has(prodId)) {
+                            cartJObject.remove(prodId);
+                            String updatedCartJson = cartJObject.toString();
+                            Cookie updatedCartCookie = new Cookie("cart", URLEncoder.encode(updatedCartJson, "UTF-8"));
+                            response.addCookie(updatedCartCookie);
+                        }
+                    }
 			RequestDispatcher rd = request.getRequestDispatcher("cartDetails.jsp");
 			rd.include(request, response);
 		}
