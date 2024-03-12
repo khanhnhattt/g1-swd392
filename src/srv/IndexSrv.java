@@ -4,6 +4,7 @@
  */
 package srv;
 
+import dao.ProductDaoImpl;
 import service.impl.CartServiceImpl;
 
 import java.io.IOException;
@@ -20,6 +21,11 @@ public class IndexSrv extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String type = request.getParameter("type");
+        ProductDaoImpl pDao = new ProductDaoImpl();
+        if (type != null) {
+            pDao.getAllProductsByType(type);
+        }
         RequestDispatcher rd = request.getRequestDispatcher("index.jsp");
         rd.forward(request, response);
     }
