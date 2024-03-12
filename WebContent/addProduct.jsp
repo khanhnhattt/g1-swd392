@@ -1,4 +1,4 @@
-<%@ page import="com.shashi.beans.ProductBean" %>
+<%@ page import="beans.ProductBean" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
          pageEncoding="ISO-8859-1" %>
 <!DOCTYPE html>
@@ -183,21 +183,21 @@
                     <label for="producttype">Product Type</label> <select name="type"
                                                                           id="producttype" class="form-control"
                                                                           required>
-                                        <option value="2"
-                                                <%= ptype == 2 ? "selected" : ""%>>MOBILE
-                                        </option>
-                                        <option value="3"
-                                                <%=ptype == 3 ? "selected" : ""%>>TV
-                                        </option>
-                                        <option value="4"
-                                                <%=ptype == 4 ? "selected" : ""%>>CAMERA
-                                        </option>
-                                        <option value="1"
-                                                <%=ptype == 1 ? "selected" : ""%>>LAPTOP
-                                        </option>
-                                        <option value="5"
-                                                <%=ptype == 5 ? "selected" : ""%>>SPEAKER
-                                        </option>
+                    <option value="2"
+                            <%= ptype == 2 ? "selected" : ""%>>MOBILE
+                    </option>
+                    <option value="3"
+                            <%=ptype == 3 ? "selected" : ""%>>TV
+                    </option>
+                    <option value="4"
+                            <%=ptype == 4 ? "selected" : ""%>>CAMERA
+                    </option>
+                    <option value="1"
+                            <%=ptype == 1 ? "selected" : ""%>>LAPTOP
+                    </option>
+                    <option value="5"
+                            <%=ptype == 5 ? "selected" : ""%>>SPEAKER
+                    </option>
                 </select>
                 </div>
             </div>
