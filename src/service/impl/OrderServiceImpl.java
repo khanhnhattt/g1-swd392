@@ -14,6 +14,19 @@ import beans.TransactionBean;
 import service.OrderService;
 import utility.DBUtil;
 import utility.MailMessage;
+import beans.CartBean;
+import beans.OrderBean;
+import beans.OrderDetails;
+import beans.TransactionBean;
+import service.OrderService;
+import utility.DBUtil;
+import utility.MailMessage;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Iterator;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import org.json.JSONObject;
 
 public class OrderServiceImpl implements OrderService {
 
@@ -36,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
         // System.out.println("Transaction: "+transaction.getTransactionId()+"
         // "+transaction.getTransAmount()+" "+transaction.getUserName()+"
         // "+transaction.getTransDateTime());
-        if (guestCarts == null) {
+        if(guestCarts == null){
             for (CartBean item : cartItems) {
 
                 double amount = new ProductServiceImpl().getProductPrice(item.getProdId()) * item.getQuantity();
@@ -46,20 +59,22 @@ public class OrderServiceImpl implements OrderService {
                 ordered = addOrder(order);
                 if (!ordered) {
                     break;
-                } else {
+                }
+                else {
                     ordered = new CartServiceImpl().removeAProduct(userName, item.getProdId());
                 }
 
                 if (!ordered) {
                     break;
-                } else
+                }
+                else
                     ordered = new ProductServiceImpl().sellNProduct(item.getProdId(), item.getQuantity());
 
                 if (!ordered) {
                     break;
                 }
             }
-        } else {
+        }else {
             for (CartBean item : guestCarts) {
 
                 double amount = new ProductServiceImpl().getProductPrice(item.getProdId()) * item.getQuantity();
@@ -69,13 +84,15 @@ public class OrderServiceImpl implements OrderService {
                 ordered = addOrder(order);
                 if (!ordered) {
                     break;
-                } else {
+                }
+                else {
                     ordered = new CartServiceImpl().removeGProduct(sessionId, item.getProdId());
                 }
 
                 if (!ordered) {
                     break;
-                } else
+                }
+                else
                     ordered = new ProductServiceImpl().sellNProduct(item.getProdId(), item.getQuantity());
 
                 if (!ordered) {

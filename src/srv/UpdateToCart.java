@@ -2,17 +2,17 @@ package srv;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 
 import beans.DemandBean;
 import beans.ProductBean;
+import org.json.JSONObject;
 import service.impl.CartServiceImpl;
 import service.impl.DemandServiceImpl;
 import service.impl.ProductServiceImpl;
@@ -41,7 +41,26 @@ public class UpdateToCart extends HttpServlet {
         if (userName != null || password != null) {
             cart.deleteProductFromCart(userName, prodId);
         } else {
-            cart.deleteProductFromGuestCart(sessId, prodId);
+            String cartJson = null;
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("cart")) {
+                        cartJson = URLDecoder.decode(cookie.getValue(), "UTF-8");
+                        break;
+                    }
+                }
+            }
+            if (cartJson != null && !cartJson.isEmpty()) {
+                JSONObject cartJObject = new JSONObject(cartJson);
+
+                if (cartJObject.has(prodId)) {
+                    cartJObject.remove(prodId);
+                    String updatedCartJson = cartJObject.toString();
+                    Cookie updatedCartCookie = new Cookie("cart", URLEncoder.encode(updatedCartJson, "UTF-8"));
+                    response.addCookie(updatedCartCookie);
+                }
+            }
             RequestDispatcher rd = request.getRequestDispatcher("cartDetails.jsp");
             rd.include(request, response);
         }
