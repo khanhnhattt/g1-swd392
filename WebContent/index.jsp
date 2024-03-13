@@ -163,7 +163,8 @@
 							class="btn btn-success">Add to Cart</button>
 						&nbsp;&nbsp;&nbsp;
 						<button type="submit"
-							formaction="payment.jsp?amount=<%=product.getProdPrice()%>"
+							formaction="payment.jsp?amount=<%=product.getProdPrice()%>&buyNow=1&pid=<%=product.getProdId()%>
+										&pName=<%=product.getProdName()%>&pType=<%=product.getProdCategory()%>"
 							class="btn btn-primary">Buy Now</button>
 						<%
 						} else {
