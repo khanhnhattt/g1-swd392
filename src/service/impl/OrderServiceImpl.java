@@ -31,80 +31,48 @@ import org.json.JSONObject;
 public class OrderServiceImpl implements OrderService {
 
     @Override
-    public String paymentSuccess(String userName, double paidAmount, String sessionId) {
+    public String paymentSuccess(String userName, double paidAmount) {
         String status = "Order Placement Failed!";
 
         List<CartBean> cartItems = new ArrayList<CartBean>();
-        List<CartBean> guestCarts = new ArrayList<CartBean>();
-        cartItems = new CartServiceImpl().getAllGuestCartItems(sessionId);
-        guestCarts = new CartServiceImpl().getAllGuestCartItems(sessionId);
-        if (cartItems.isEmpty() && guestCarts.isEmpty())
-            return status;
-
         TransactionBean transaction = new TransactionBean(userName, paidAmount);
         boolean ordered = false;
-
+        cartItems = new CartServiceImpl().getAllCartItems(userName);
+        if (cartItems.isEmpty()){
+            return status;
+        }
         String transactionId = transaction.getTransactionId();
 
         // System.out.println("Transaction: "+transaction.getTransactionId()+"
         // "+transaction.getTransAmount()+" "+transaction.getUserName()+"
         // "+transaction.getTransDateTime());
-        if(guestCarts == null){
-            for (CartBean item : cartItems) {
+        for (CartBean item : cartItems) {
 
-                double amount = new ProductServiceImpl().getProductPrice(item.getProdId()) * item.getQuantity();
+            double amount = new ProductServiceImpl().getProductPrice(item.getProdId()) * item.getQuantity();
 
-                OrderBean order = new OrderBean(transactionId, item.getProdId(), item.getQuantity(), amount);
+            OrderBean order = new OrderBean(transactionId, item.getProdId(), item.getQuantity(), amount);
 
-                ordered = addOrder(order);
-                if (!ordered) {
-                    break;
-                }
-                else {
-                    ordered = new CartServiceImpl().removeAProduct(userName, item.getProdId());
-                }
-
-                if (!ordered) {
-                    break;
-                }
-                else
-                    ordered = new ProductServiceImpl().sellNProduct(item.getProdId(), item.getQuantity());
-
-                if (!ordered) {
-                    break;
-                }
+            ordered = addOrder(order);
+            if (!ordered) {
+                break;
+            } else {
+                ordered = new CartServiceImpl().removeAProduct(userName, item.getProdId());
             }
-        }else {
-            for (CartBean item : guestCarts) {
 
-                double amount = new ProductServiceImpl().getProductPrice(item.getProdId()) * item.getQuantity();
+            if (!ordered) {
+                break;
+            } else
+                ordered = new ProductServiceImpl().sellNProduct(item.getProdId(), item.getQuantity());
 
-                OrderBean order = new OrderBean(transactionId, item.getProdId(), item.getQuantity(), amount);
-
-                ordered = addOrder(order);
-                if (!ordered) {
-                    break;
-                }
-                else {
-                    ordered = new CartServiceImpl().removeGProduct(sessionId, item.getProdId());
-                }
-
-                if (!ordered) {
-                    break;
-                }
-                else
-                    ordered = new ProductServiceImpl().sellNProduct(item.getProdId(), item.getQuantity());
-
-                if (!ordered) {
-                    break;
-                }
+            if (!ordered) {
+                break;
             }
         }
 
 
         if (ordered) {
             ordered = new OrderServiceImpl().addTransaction(transaction);
-            if (ordered == true) {
+            if (ordered) {
 
 //                MailMessage.transactionSuccess(userName, new UserServiceImpl().getFName(userName),
 //                        transaction.getTransactionId(), transaction.getTransAmount());
