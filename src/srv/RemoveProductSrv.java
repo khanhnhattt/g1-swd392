@@ -29,16 +29,16 @@ public class RemoveProductSrv extends HttpServlet {
         String userName = (String) session.getAttribute("username");
         String password = (String) session.getAttribute("password");
 
-//		if (userType == null || !userType.equals("admin")) {
-//
-//			response.sendRedirect("login.jsp?message=Access Denied, Login As Admin!!");
-//
-//		}
-//
-//		else if (userName == null || password == null) {
-//
-//			response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
-//		}
+		if (userType == null || !userType.equals("admin")) {
+
+			response.sendRedirect("login.jsp?message=Access Denied, Login As Admin!!");
+
+		}
+
+		else if (userName == null || password == null) {
+
+			response.sendRedirect("login.jsp?message=Session Expired, Login Again!!");
+		}
 
         // login checked
 

@@ -53,6 +53,7 @@
                 <th>Price</th>
                 <th>Sold Qty</th>
                 <th>Stock Qty</th>
+                <th>Status</th>
                 <th colspan="2" style="text-align: center">Actions</th>
             </tr>
             </thead>
@@ -87,9 +88,20 @@
                 <td><%=product.getProdQuantity()%>
                 </td>
                 <td>
+                    <p class="productIsActive">
+                            <% if (product.isActive()) {%>
+                    <div>Is Active</div>
+                    <%
+                    } else {
+                    %>
+                    <div>Is not Active</div>
+                    <% } %>
+                    </p>
+                </td>
+                <td>
                     <form method="post">
                         <button type="submit"
-                                formaction="updateProduct.jsp?prodid=<%=product.getProdId()%>"
+                                formaction="addProduct.jsp?form=updateById&prodid=<%=product.getProdId()%>"
                                 class="btn btn-primary">Update
                         </button>
                     </form>

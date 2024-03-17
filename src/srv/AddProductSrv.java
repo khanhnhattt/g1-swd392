@@ -32,22 +32,26 @@ public class AddProductSrv extends HttpServlet {
         String userName = (String) session.getAttribute("username");
         String password = (String) session.getAttribute("password");
 
-//		if (userType == null || !userType.equals("admin")) {
-//
-//			response.sendRedirect("login.jsp?message=Access Denied!");
-//			return;
-//		}
-//		else if (userName == null || password == null) {
-//			response.sendRedirect("login.jsp?message=Session Expired, Login Again to Continue!");
-//			return;
-//		}
+        if (userType == null || !userType.equals("admin")) {
 
+            response.sendRedirect("login.jsp?message=Access Denied!");
+            return;
+        } else if (userName == null || password == null) {
+            response.sendRedirect("login.jsp?message=Session Expired, Login Again to Continue!");
+            return;
+        }
+        int prodType = 0;
+        double prodPrice =0 ;
+        int prodQuantity = 0;
         String status = "Product Registration Failed!";
         String prodName = request.getParameter("name");
-        int prodType = Integer.parseInt(request.getParameter("type"));
+        if (request.getParameter("type") != null)
+            prodType = Integer.parseInt(request.getParameter("type"));
         String prodInfo = request.getParameter("info");
-        double prodPrice = Double.parseDouble(request.getParameter("price"));
-        int prodQuantity = Integer.parseInt(request.getParameter("quantity"));
+        if (request.getParameter("type") != null)
+            prodPrice = Double.parseDouble(request.getParameter("price"));
+        if (request.getParameter("type") != null)
+            prodQuantity = Integer.parseInt(request.getParameter("quantity"));
 
         Part part = request.getPart("image");
 

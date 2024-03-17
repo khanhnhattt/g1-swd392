@@ -236,7 +236,7 @@
                         <li><a href="unshippedItems.jsp">Orders</a></li>
                         <li><a href="addProduct.jsp">Add Product</a></li>
                         <li><a href="removeProduct.jsp">Remove Product</a></li>
-                        <li><a href="updateProductById.jsp">Update Product</a></li>
+                        <li><a href="addProduct.jsp?form=update">Update Product</a></li>
                         <li><a href="./LogoutSrv">Logout</a></li>
                     </ul>
                 </li>
