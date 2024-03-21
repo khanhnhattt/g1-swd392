@@ -214,6 +214,8 @@
                 <p>Phí vận chuyển: 0</p>
                 <p>Tổng cộng: <%=request.getParameter("amount")%></p>
                 <input type="hidden" name="amount" value="<%=request.getParameter("amount")%>">
+				<input type="hidden" name="pId" value="<%=request.getParameter("pid")%>">
+				<input type="hidden" name="BuyNow" value="<%=request.getParameter("buyNow")%>">
             </div>
 
 			<div class="buttons">
