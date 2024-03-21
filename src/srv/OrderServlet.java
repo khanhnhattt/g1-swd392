@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import beans.OrderBean;
+import beans.TransactionBean;
 import service.impl.OrderServiceImpl;
 
 /**
@@ -23,12 +25,26 @@ public class OrderServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        HttpSession session = request.getSession();
-        String userName = (request.getParameter("username") != null) ? request.getParameter("username") : (String) session.getAttribute("username");
-
+        String userName = request.getParameter("username");
+        String status = "";
         double paidAmount = Double.parseDouble(request.getParameter("amount"));
-        String status = new OrderServiceImpl().paymentSuccess(userName, paidAmount);
-
+        if(request.getParameter("BuyNow")!=null){
+            boolean ordered = false;
+            OrderServiceImpl orderService = new OrderServiceImpl();
+            TransactionBean transaction = new TransactionBean(userName, paidAmount);
+            String transactionId = transaction.getTransactionId();
+            OrderBean order = new OrderBean(transactionId, request.getParameter("pId"), 1, paidAmount);
+            ordered = orderService.addOrder(order);
+            if (ordered) {
+                ordered = new OrderServiceImpl().addTransaction(transaction);
+                if (ordered) {
+                    status = "Order Placed Successfully!";
+                }
+            }
+        }
+        else{
+            status = new OrderServiceImpl().paymentSuccess(userName, paidAmount);
+        }
         PrintWriter pw = response.getWriter();
         response.setContentType("text/html");
 

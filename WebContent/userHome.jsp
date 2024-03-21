@@ -91,9 +91,9 @@
                     </button>
                     &nbsp;&nbsp;&nbsp;
                     <button type="submit"
-                            formaction="payment.jsp?amount=<%=product.getProdPrice()%>"
-                            class="btn btn-primary">Buy Now
-                    </button>
+                            formaction="payment.jsp?amount=<%=product.getProdPrice()%>&buyNow=1&pid=<%=product.getProdId()%>
+										&pName=<%=product.getProdName()%>&pType=<%=product.getProdCategory()%>"
+                            class="btn btn-primary">Buy Now</button>
                     <%
                     } else {
                     %>
